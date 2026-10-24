@@ -89,3 +89,13 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+int
+sys_vmmap(void)
+{
+  int va;
+
+  if(argint(0, &va) < 0)
+    return -1;
+
+  return vmprintmap(myproc()->pgdir, (uint)va, myproc()->sz);
+}
