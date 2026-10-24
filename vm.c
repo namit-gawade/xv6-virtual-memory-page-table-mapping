@@ -310,6 +310,32 @@ clearpteu(pde_t *pgdir, char *uva)
   *pte &= ~PTE_U;
 }
 
+
+// Print the page-table mapping for a user virtual address.
+int
+vmprintmap(pde_t *pgdir, uint va, uint sz)
+{
+  pte_t *pte;
+  uint pa, flags;
+
+  if(va >= sz)
+    return -1;
+
+  pte = walkpgdir(pgdir, (char*)va, 0);
+  if(pte == 0 || !(*pte & PTE_P) || !(*pte & PTE_U))
+    return -1;
+
+  pa = PTE_ADDR(*pte);
+  flags = PTE_FLAGS(*pte);
+
+  cprintf("VM MAP: VA 0x%x -> PA 0x%x, FLAGS 0x%x [P=%d W=%d U=%d]\n",
+          va, pa, flags,
+          (flags & PTE_P) != 0,
+          (flags & PTE_W) != 0,
+          (flags & PTE_U) != 0);
+
+  return 0;
+}
 // Given a parent process's page table, create a copy
 // of it for a child.
 pde_t*
