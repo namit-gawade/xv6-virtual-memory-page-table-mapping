@@ -30,7 +30,13 @@ main(void)
   vmmap((uint)heap_var);
 
   printf(1, "\n--- Fork test ---\n");
-  if(fork() == 0){
+  int pid = fork();
+  if(pid < 0){
+    printf(1, "vmtest: fork failed\n");
+    free(heap_var);
+    exit();
+  }
+  if(pid == 0){
     global_var = 111;
     local_var = 222;
     *heap_var = 333;
